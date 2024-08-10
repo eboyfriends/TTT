@@ -106,12 +106,11 @@ public class RoleBehavior : IRoleService, IPluginBehavior
 
         Server.NextFrame(() =>
         {
-            Server.PrintToChatAll(StringUtils.FormatTTT($"{GetRole(victim).FormatStringFullAfter(" has been found.")}"));
-
-            if (attacker == victim || attacker == null) return;
+            if (attacker == victim || attacker == null || victim == null) return;
 
             attacker.ModifyScoreBoard();
 
+            Server.PrintToChatAll(StringUtils.FormatTTT($"{GetRole(victim).FormatStringFullAfter(" has been found.")}"));
             victim.PrintToChat(StringUtils.FormatTTT($"You were killed by {GetRole(attacker).FormatStringFullAfter(" " + attacker.PlayerName)}."));
             attacker.PrintToChat(StringUtils.FormatTTT($"You killed {GetRole(victim).FormatStringFullAfter(" " + victim.PlayerName)}."));
         });
