@@ -2,24 +2,20 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using TTT.Player;
 using TTT.Public.Behaviors;
 using TTT.Public.Extensions;
 using TTT.Public.Formatting;
 using TTT.Public.Mod.Detective;
 using TTT.Public.Mod.Role;
+using TTT.Public.Player;
 
 namespace TTT.Detective;
 
-public class DetectiveManager : IDetectiveService, IPluginBehavior
+public class DetectiveManager(IPlayerService roleService) : IDetectiveService, IPluginBehavior
 {
     private const int TaserAmmoType = 18;
-    private readonly IRoleService _roleService;
-
-    public DetectiveManager(IRoleService roleService)
-    {
-        _roleService = roleService;
-    }
 
     public void Start(BasePlugin parent)
     {
@@ -30,24 +26,49 @@ public class DetectiveManager : IDetectiveService, IPluginBehavior
         });
 
         
-        /**
-        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(hook =>
+        VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(OnZeus, HookMode.Pre);
+
+    }
+
+    public HookResult OnZeus(DynamicHook hook)
+    {
+        var ent = hook.GetParam<CBaseEntity>(0);
+        var victim = player(ent);
+
+        if (victim == null) return HookResult.Continue;
+
+        var info = hook.GetParam<CTakeDamageInfo>(1);
+        var attacker = info.Attacker.Value;
+        if (attacker is not null and CCSPlayerPawn playerPawn)
         {
-            var info = hook.GetParam<CTakeDamageInfo>(1);
-            if (info.Attacker.Value == null || !info.Attacker.Value.IsValid) return HookResult.Continue;
-            var attacker = info.Attacker.Value.As<CCSPlayerController>();
-            if (attacker == hook.GetParam<CBaseEntity>(0)) return HookResult.Continue;
-            if (info.AmmoType is not TaserAmmoType) return HookResult.Continue;
+            var controller = playerPawn.Controller.Value;
+            if (controller is not null and CCSPlayerController playerController)
+            {
+                if (info.BitsDamageType is not 256) return HookResult.Continue;
+                info.Damage = 0;
 
-            info.Damage = 1f;
+                var targetRole = roleService.GetPlayer(victim);
+                Server.NextFrame(() =>
+                {
+                    playerController.PrintToChat(StringUtils.FormatTTT($"You tased player {victim.PlayerName} they are a {targetRole.PlayerRole().FormatRoleFull()}"));
+                });
+                
+                return HookResult.Stop;
+            }
+        }
+        return HookResult.Continue;
 
-            if (!attacker.IsReal()) return HookResult.Continue;
+        // whoever wrote this shit needs help
+        // CCSPlayerController? attacker = null;
 
-            var ammoType = info.AmmoType;
+        // if (info.Attacker.Value != null)
+        // {
+        //     var playerWhoAttacked = info.Attacker.Value.As<CCSPlayerPawn>();
 
-            return HookResult.Changed;
-        }, HookMode.Pre);
-        */
+        //     if (playerWhoAttacked.Controller.Value != null) {
+        //         attacker = playerWhoAttacked.Controller.Value.As<CCSPlayerController>();
+        //     }
+        // }
     }
 
     
@@ -60,7 +81,7 @@ public class DetectiveManager : IDetectiveService, IPluginBehavior
     {
         //add states
 
-       if (_roleService.GetRole(caller) != Role.Detective) return;
+       if (roleService.GetPlayer(caller).PlayerRole() != Role.Detective) return;
 
         var entity = caller.GetClientRagdollAimTarget();
 
@@ -68,7 +89,7 @@ public class DetectiveManager : IDetectiveService, IPluginBehavior
         
         if (entity.PawnIsAlive) return;
         
-        var player = _roleService.GetPlayer(entity);
+        var player = roleService.GetPlayer(entity);
 
         if (player.IsFound()) return;
         
@@ -85,11 +106,25 @@ public class DetectiveManager : IDetectiveService, IPluginBehavior
         else
             message = StringUtils.FormatTTT(
                 player.PlayerRole().FormatStringFullAfter($"{plr.PlayerName} was killed by ") +
-                _roleService.GetRole(killerEntity).FormatStringFullAfter(killerEntity.PlayerName));
+                roleService.GetPlayer(killerEntity).PlayerRole().FormatStringFullAfter(killerEntity.PlayerName));
 
 
         player.SetFound(true);
         
         Server.NextFrame(() => { Server.PrintToChatAll(message); });
+    }
+    
+    public static CCSPlayerController? player(CEntityInstance? instance)
+    {
+        if (instance == null || instance.DesignerName != "player") {
+            return null;
+        }
+
+        CCSPlayerPawn player_pawn = Utilities.GetEntityFromIndex<CCSPlayerPawn>((int)instance.Index);
+        if (player_pawn == null || !player_pawn.IsValid || player_pawn.OriginalController == null || !player_pawn.OriginalController.IsValid) {
+            return null;
+        }
+
+        return player_pawn.OriginalController.Value;
     }
 }

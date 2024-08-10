@@ -9,15 +9,12 @@ using TTT.Public.Formatting;
 
 namespace TTT.Round;
 
-public class Round
+public class Round(IRoleService roleService, RoundConfig? config, int roundId)
 {
-    private readonly IRoleService _roleService;
-    private float _graceTime = Config.TTTConfig.GraceTime * 64;
-
-    public Round(IRoleService roleService)
-    {
-        _roleService = roleService;
-    }
+    private IRoleService _roleService = roleService;
+    private readonly RoundConfig? _config = config;
+    private float _graceTime = 20 * 64;
+    private readonly int _roundId = roundId;
 
     public void Tick()
     {
@@ -53,7 +50,7 @@ public class Round
         }
         
         _roleService.AddRoles();
-        Server.NextFrame(() => Server.PrintToChatAll(StringUtils.FormatTTT($"A new round has started! {_roleService.GetTraitors().Count} traitors.")));
+        Server.NextFrame(() => Server.PrintToChatAll(StringUtils.FormatTTT($"Round #{_roundId} has started! {_roleService.GetTraitors().Count} traitors.")));
         SendTraitorMessage();
         SendDetectiveMessage();
         SendInnocentMessage();
