@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         where TExtension : class, IPluginBehavior
     {
         //	Add the root extension itself as a scoped service.
-        //	This means every time Load is called in the main Jailbreak loader,
+        //	This means every time Load is called in the main loader,
         //	the extension will be fetched and kept as a singleton for the duration
         //	until "Unload" is called.
         collection.AddScoped<TExtension>();
