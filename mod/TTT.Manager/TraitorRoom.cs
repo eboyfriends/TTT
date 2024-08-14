@@ -2,7 +2,6 @@
 using CounterStrikeSharp.API.Core;
 using TTT.Public.Behaviors;
 using TTT.Public.Extensions;
-using TTT.Public.Mod.Logs;
 using TTT.Public.Player;
 
 namespace TTT.Manager;

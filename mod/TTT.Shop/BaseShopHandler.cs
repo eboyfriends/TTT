@@ -66,6 +66,7 @@ public class BaseShopHandler : IShopItemHandler, IPluginBehavior
                 playerController.PrintToChat(StringUtils.FormatTTT($"You already own {item.Name()}"));
                 break;
             case BuyResult.IncorrectRole:
+                playerController.PrintToChat(StringUtils.FormatTTT($"Incorrect role for {item.Name()}"));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

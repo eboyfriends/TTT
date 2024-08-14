@@ -31,8 +31,7 @@ public class Round(IRoleService roleService, RoundConfig? config, int roundId)
         {
             Server.NextFrame(() =>
             {
-                player.PrintToCenterHtml(
-                    $"{formattedColor}<b>[TTT] Game is starting in {Math.Floor(_graceTime / 64)} seconds</b></font>");
+                player.PrintToCenterHtml($"{formattedColor}<b>[TTT] Game is starting in {Math.Floor(_graceTime / 64)} seconds</b></font>");
             });
         }
     }

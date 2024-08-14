@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using TTT.Player;
 using TTT.Public.Mod.Role;
 using TTT.Public.Shop;
@@ -25,9 +26,12 @@ public class AwpItem : IShopItem
     public BuyResult OnBuy(GamePlayer player)
     {
         if (player.Credits() < Price()) return BuyResult.NotEnoughCredits;
-        if (player.PlayerRole() != Role.Detective) return BuyResult.IncorrectRole;
+        if (player.PlayerRole() != Role.Traitor) return BuyResult.IncorrectRole;
+        CCSPlayerController? playerController = player.Player();
+
         player.RemoveCredits(Price());
-        player.Player().GiveNamedItem(CsItem.AWP);
+        playerController?.GiveNamedItem(CsItem.AWP);
+        
         return BuyResult.Successful;
     }
 }

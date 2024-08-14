@@ -9,7 +9,6 @@ using TTT.Public.Action;
 using TTT.Public.Behaviors;
 using TTT.Public.Extensions;
 using TTT.Public.Formatting;
-using TTT.Public.Mod.Logs;
 using TTT.Public.Mod.Role;
 using TTT.Public.Mod.Round;
 using TTT.Public.Player;

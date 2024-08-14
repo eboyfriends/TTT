@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Modules.Entities.Constants;
+﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using TTT.Player;
 using TTT.Public.Mod.Role;
 using TTT.Public.Shop;
@@ -14,7 +15,6 @@ public class AkItem : IShopItem
 
     public string SimpleName()
     {
-        //css_buy ak47
         return "ak47";
     }
 
@@ -27,9 +27,11 @@ public class AkItem : IShopItem
     {
         if (player.Credits() < Price()) return BuyResult.NotEnoughCredits;
         if (player.PlayerRole() != Role.Traitor) return BuyResult.IncorrectRole;
+        CCSPlayerController? playerController = player.Player();
+
         player.RemoveCredits(Price());
-        var playerObject = player.Player();
-        playerObject.GiveNamedItem(CsItem.AK47);
+        playerController?.GiveNamedItem(CsItem.AK47);
+
         return BuyResult.Successful;
     }
 }
