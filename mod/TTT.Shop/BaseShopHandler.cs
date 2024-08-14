@@ -61,7 +61,6 @@ public class BaseShopHandler : IShopItemHandler, IPluginBehavior
                 break;
             case BuyResult.Successful:
                 playerController.PrintToChat(StringUtils.FormatTTT($"You have bought {item.Name()}"));
-                player.AddItem(item);
                 break;
             case BuyResult.AlreadyOwned:
                 playerController.PrintToChat(StringUtils.FormatTTT($"You already own {item.Name()}"));

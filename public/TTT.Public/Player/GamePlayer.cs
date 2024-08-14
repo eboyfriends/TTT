@@ -101,11 +101,6 @@ public class GamePlayer
     {
         _killer = killer;
     }
-
-    public void AddItem(IShopItem item) {
-        CCSPlayerController? playerController = Utilities.GetPlayerFromUserid(_playerId); 
-        playerController?.GiveNamedItem(item.Name());
-    }
     
     public void SetShopOpen(bool open)
     {
