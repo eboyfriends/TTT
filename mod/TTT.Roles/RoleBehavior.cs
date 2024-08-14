@@ -34,14 +34,6 @@ public class RoleBehavior : IRoleService, IPluginBehavior
     {
         ModelHandler.RegisterListener(parent);
         _roundService.Start(parent);
-        /*
-        parent.RegisterEventHandler<EventPlayerConnectFull>(OnPlayerConnect);
-        parent.RegisterEventHandler<EventRoundFreezeEnd>(OnRoundStart);
-        parent.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
-        parent.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
-        parent.RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath, HookMode.Pre);
-        parent.RegisterEventHandler<EventGameStart>(OnMapStart);
-        */
     }
 
     public IRoundService GetRoundService()
@@ -102,7 +94,7 @@ public class RoleBehavior : IRoleService, IPluginBehavior
 
         if (IsDetective(victim) || IsInnocent(victim)) _innocentsLeft--;
 
-        if (_traitorsLeft == 0 || _innocentsLeft == 0) Server.NextFrame(() => _roundService.ForceEnd());
+        if (_traitorsLeft == 0 || _innocentsLeft == 0) Server.NextFrame(() => _roundService.EndRound());
 
         Server.NextFrame(() =>
         {

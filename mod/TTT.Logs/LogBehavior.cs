@@ -13,7 +13,7 @@ namespace TTT.Logs;
 
 public class LogBehavior : ILogService, IPluginBehavior
 {
-    private int _round = 1;
+    private int _round = 0;
     
     public void Start(BasePlugin plugin)
     {
@@ -41,7 +41,7 @@ public class LogBehavior : ILogService, IPluginBehavior
     }
     
     public void AddLog(Action action)
-    {
+    {        
         _logs[_round].AddLog(action);
     }
 
@@ -73,7 +73,12 @@ public class LogBehavior : ILogService, IPluginBehavior
 
     public IRoundLogs GetLogs(int round)
     {
-        return _logs[round];
+        if (_logs.TryGetValue(round, out var logs))
+        {
+            return logs;
+        }
+
+        throw new KeyNotFoundException($"Logs for round {round} not found.");
     }
     
     public void CreateRound(int round)

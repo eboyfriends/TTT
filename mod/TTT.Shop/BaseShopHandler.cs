@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using CounterStrikeSharp.API.Core;
 using TTT.Player;
 using TTT.Public.Behaviors;
 using TTT.Public.Formatting;
@@ -46,21 +47,24 @@ public class BaseShopHandler : IShopItemHandler, IPluginBehavior
         }
     }
     
-    private void BuyItem(GamePlayer player, IShopItem item)
+    private static void BuyItem(GamePlayer player, IShopItem item)
     {
-        var successful = item.OnBuy(player);
+        BuyResult successful = item.OnBuy(player);
+        CCSPlayerController? playerController = player.Player();    
+
+        if (player == null || playerController == null) return;
+
         switch (successful)
         {
             case BuyResult.NotEnoughCredits:
-                player.Player()
-                    .PrintToChat(StringUtils.FormatTTT($"You don't have enough credits to buy {item.Name()}"));
+                playerController.PrintToChat(StringUtils.FormatTTT($"You don't have enough credits to buy {item.Name()}"));
                 break;
             case BuyResult.Successful:
-                player.Player().PrintToChat(StringUtils.FormatTTT($"You have bought {item.Name()}"));
-                //player.AddItem(item);
+                playerController.PrintToChat(StringUtils.FormatTTT($"You have bought {item.Name()}"));
+                player.AddItem(item);
                 break;
             case BuyResult.AlreadyOwned:
-                player.Player().PrintToChat(StringUtils.FormatTTT($"You already own {item.Name()}"));
+                playerController.PrintToChat(StringUtils.FormatTTT($"You already own {item.Name()}"));
                 break;
             case BuyResult.IncorrectRole:
                 break;

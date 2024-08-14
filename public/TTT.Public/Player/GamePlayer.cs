@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using TTT.Public.Mod.Role;
 using TTT.Public.Player;
+using TTT.Public.Shop;
 
 namespace TTT.Player;
 
@@ -99,6 +100,11 @@ public class GamePlayer
     public void SetKiller(CCSPlayerController? killer)
     {
         _killer = killer;
+    }
+
+    public void AddItem(IShopItem item) {
+        CCSPlayerController? playerController = Utilities.GetPlayerFromUserid(_playerId); 
+        playerController?.GiveNamedItem(item.Name());
     }
     
     public void SetShopOpen(bool open)

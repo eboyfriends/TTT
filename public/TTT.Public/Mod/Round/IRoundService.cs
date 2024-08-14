@@ -12,6 +12,7 @@ public interface IRoundService
     void TickWaiting();
     void ForceStart();
     void ForceEnd();
+    void EndRound();
 }
 
 public enum RoundStatus

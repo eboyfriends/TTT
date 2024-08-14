@@ -29,7 +29,6 @@ public class RoundBehavior(IRoleService _roleService) : IRoundService
         plugin.RegisterListener<Listeners.OnTick>(TickWaiting);
         plugin.AddCommandListener("jointeam", OnTeamJoin);
         VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook(BlockDamage, HookMode.Pre);
-        plugin.AddTimer(3, EndRound, TimerFlags.REPEAT);
     }
 
     public RoundStatus GetRoundStatus()
@@ -137,7 +136,7 @@ public class RoundBehavior(IRoleService _roleService) : IRoundService
             RoundEndReason.RoundDraw);
     }
 
-    private void EndRound()
+    public void EndRound()
     {
         if (_roundStatus == RoundStatus.Started && Utilities.GetPlayers().Count(player => player.PawnIsAlive) == 1)
         {
