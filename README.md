@@ -53,6 +53,7 @@ public class AwpItem : IShopItem
 - [✅] Role assignment
 - [✅] DNA Scanner
 - [✅] Tazer
+- [ ] Rework EGO dogshit
 - [ ] Configuration
 - [ ] Karma system
 - [ ] Shop
